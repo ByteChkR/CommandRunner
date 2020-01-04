@@ -4,8 +4,16 @@ using System.Reflection;
 
 namespace CommandRunner
 {
+    /// <summary>
+    /// Small Helper Class that is Handling The Assembly Loading/Getting the Commands from assemblies.
+    /// </summary>
     public static class AssemblyHelper
     {
+        /// <summary>
+        /// Returns all Commands inside the Assembly
+        /// </summary>
+        /// <param name="asm">The Assembly to search</param>
+        /// <returns></returns>
         public static List<AbstractCommand> LoadCommandsFromAssembly(Assembly asm)
         {
 
@@ -23,6 +31,12 @@ namespace CommandRunner
             return ret;
         }
 
+        /// <summary>
+        /// Loads an assembly from path
+        /// </summary>
+        /// <param name="path">Full Path to the Assembly.</param>
+        /// <param name="asm">The Assembly that was loaded.</param>
+        /// <returns>Bool that indicates the Success</returns>
         public static bool TryLoadAssembly(string path, out Assembly asm)
         {
             try

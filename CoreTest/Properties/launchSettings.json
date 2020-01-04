@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CoreTest": {
+      "commandName": "Project",
+      "commandLineArgs": "-t1"
+    }
+  }
+}
