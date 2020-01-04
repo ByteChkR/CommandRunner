@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandRunner", "CommandRunner\CommandRunner.csproj", "{4827AAB4-03F4-4B62-BD9E-6F314753D873}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkTest", "FramworkTest\FrameworkTest.csproj", "{D59167DB-605C-425B-B1F3-417F9A1D6AFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkTest", "FrameworkTest\FrameworkTest.csproj", "{D59167DB-605C-425B-B1F3-417F9A1D6AFA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTest", "CoreTest\CoreTest.csproj", "{E8455312-522E-4D85-BF7C-E87ECFCBEC93}"
 EndProject
