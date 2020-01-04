@@ -86,8 +86,9 @@ namespace CommandRunner
         /// Runs the Commands with the Passed arguments.
         /// </summary>
         /// <param name="args">The arguments to use</param>
-        public static void RunCommands(string[] args)
+        public static bool RunCommands(string[] args)
         {
+            bool didExecute = false;
             for (int i = 0; i < args.Length; i++)
             {
                 for (int j = 0; j < _commands.Count; j++)
@@ -107,6 +108,7 @@ namespace CommandRunner
                 {
                     for (int j = 0; j < info.GetCommandEntries(_commands[i].CommandKeys[0]); j++)
                     {
+                        didExecute = true;
                         _commands[i].CommandAction?.Invoke(info, info.GetValues(_commands[i].CommandKeys[0], j).ToArray());
                     }
                 }
@@ -118,24 +120,24 @@ namespace CommandRunner
                 if (cmds.Count == 0)
                 {
                     Console.WriteLine("No Default Command Found");
+                    return didExecute;
                 }
-                else if (cmds.Count == 1)
-                {
-                    for (int j = 0; j < info.GetCommandEntries(cmds[0].CommandKeys[0]); j++)
-                    {
-                        cmds[0].CommandAction?.Invoke(info, info.GetValues(cmds[0].CommandKeys[0], j).ToArray());
-                    }
-                }
-                else
+                didExecute = true;
+
+                if (cmds.Count != 1)
                 {
                     Console.WriteLine("Found more than one Default Command.");
                     Console.WriteLine("Using Command: " + cmds[0].CommandKeys[0]);
-                    for (int j = 0; j < info.GetCommandEntries("noflag"); j++)
-                    {
-                        cmds[0].CommandAction?.Invoke(info, info.GetValues("noflag", j).ToArray());
-                    }
                 }
+
+                for (int j = 0; j < info.GetCommandEntries("noflag"); j++)
+                {
+                    cmds[0].CommandAction?.Invoke(info, info.GetValues("noflag", j).ToArray());
+                }
+
             }
+
+            return didExecute;
         }
     }
 }

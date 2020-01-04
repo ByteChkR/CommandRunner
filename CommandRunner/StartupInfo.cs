@@ -71,7 +71,7 @@ namespace CommandRunner
                     List<string> argValues = new List<string>();
                     for (int j = i + 1; j < args.Length; j++)
                     {
-                        if (HasCommandPrefix(args[i]))
+                        if (HasCommandPrefix(args[j]))
                         {
                             break;
                         }
