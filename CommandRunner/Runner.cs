@@ -42,6 +42,7 @@ namespace CommandRunner
             List<AbstractCommand> cmds = AssemblyHelper.LoadCommandsFromAssembly(asm);
             for (int i = 0; i < cmds.Count; i++)
             {
+                Console.WriteLine("Adding Command: "+ cmds[i].GetType().FullName);
                 AddCommand(cmds[i]);
             }
         }
