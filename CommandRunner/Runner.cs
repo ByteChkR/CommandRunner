@@ -42,7 +42,7 @@ namespace CommandRunner
             List<AbstractCommand> cmds = AssemblyHelper.LoadCommandsFromAssembly(asm);
             for (int i = 0; i < cmds.Count; i++)
             {
-                Console.WriteLine("Adding Command: "+ cmds[i].GetType().FullName);
+                Console.WriteLine("Adding Command: " + cmds[i].GetType().FullName);
                 AddCommand(cmds[i]);
             }
         }
@@ -114,7 +114,7 @@ namespace CommandRunner
                 }
             }
 
-            if (info.GetCommandEntries("noflag") != 0)
+            if (info.GetCommandEntries("noflag") != 0 || info.GetCommandEntries("noflag") == 0 && info.CommandCount == 0)
             {
                 List<AbstractCommand> cmds = _commands.Where(x => x.DefaultCommand).ToList();
                 if (cmds.Count == 0)
@@ -130,11 +130,15 @@ namespace CommandRunner
                     Console.WriteLine("Using Command: " + cmds[0].CommandKeys[0]);
                 }
 
-                for (int j = 0; j < info.GetCommandEntries("noflag"); j++)
+                if (info.GetCommandEntries("noflag") != 0)
+                    for (int j = 0; j < info.GetCommandEntries("noflag"); j++)
+                    {
+                        cmds[0].CommandAction?.Invoke(info, info.GetValues("noflag", j).ToArray());
+                    }
+                else
                 {
-                    cmds[0].CommandAction?.Invoke(info, info.GetValues("noflag", j).ToArray());
+                    cmds[0].CommandAction?.Invoke(info, new string[0]);
                 }
-
             }
 
             return didExecute;

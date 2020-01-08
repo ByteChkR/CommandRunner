@@ -15,6 +15,7 @@ namespace cmdcli_core
             Path.GetDirectoryName(new Uri(Assembly.GetEntryAssembly().CodeBase).AbsolutePath);
         public static string ModuleList => Path.Combine(RootDir, "ModuleList.xml");
         public static string ModulePath => Path.Combine(RootDir, "Modules/");
+        public static string ModuleURL => "http://213.109.162.193/packages/cmdcli/modules/";
         private static List<ModuleInfo> moduleDatabase;
 
         public static void RunArgs(string[] args)

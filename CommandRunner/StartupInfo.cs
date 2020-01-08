@@ -23,6 +23,8 @@ namespace CommandRunner
         /// </summary>
         public static string FilePathPrefix = "@";
 
+        public int CommandCount => _values.Count;
+
 
         /// <summary>
         /// Returns True if the Text is a short or long command.

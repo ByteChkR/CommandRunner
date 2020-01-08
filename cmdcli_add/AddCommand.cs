@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using cmdcli_core;
 using CommandRunner;
 
 namespace cmdcli_add
@@ -12,6 +13,10 @@ namespace cmdcli_add
 
     public class ModuleInfo : AbstractCmdModuleInfo
     {
+        public override string[] Dependencies => new[]
+        {
+            "cmdcli_core.dll"
+        };
         public override string ModuleName => "add";
         public override void RunArgs(string[] args)
         {
@@ -30,7 +35,7 @@ namespace cmdcli_add
                 Console.WriteLine("Adding Module: " + name);
                 string tmpDir = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(Path.GetTempFileName()));
                 string tmpFile = Path.Combine(tmpDir, Path.GetTempFileName());
-                string url = "http://213.109.162.193/packages/cmdcli/modules/" + name + ".zip";
+                string url = ModuleCommandLineInterface.ModuleURL + name + ".zip";
                 //Test
                 if (IsUrlCorrect(url))
                 {

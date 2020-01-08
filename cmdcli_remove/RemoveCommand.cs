@@ -53,7 +53,7 @@ namespace cmdcli_add
             Remove(args);
         }
 
-        public RemoveCommand() : base(Remove, new[] { "--remove", "-a" }, _HelpText, true)
+        public RemoveCommand() : base(Remove, new[] { "--remove", "-r" }, _HelpText, true)
         {
 
         }

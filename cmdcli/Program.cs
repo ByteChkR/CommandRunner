@@ -76,7 +76,6 @@ namespace cmdcli
 
         private static void Run(string[] args)
         {
-            //ModuleCommandLineInterface.RunArgs(args);
             try
             {
                 cliMethod.Invoke(null, new[] { args });
