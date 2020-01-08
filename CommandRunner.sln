@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreTest", "CoreTest\CoreTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmdcli", "cmdcli\cmdcli.csproj", "{4CD43426-DB0B-4DF3-94AD-494B8CD8F314}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmdcli_testlib", "cmdcli_testlib\cmdcli_testlib.csproj", "{36B55DA5-59F5-4D20-8C48-A5C52B3276AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmdcli_utils", "cmdcli_testlib\cmdcli_utils.csproj", "{36B55DA5-59F5-4D20-8C48-A5C52B3276AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

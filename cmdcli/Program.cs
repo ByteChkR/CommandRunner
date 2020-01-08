@@ -14,21 +14,52 @@ namespace cmdcli
     {
         public string ModuleCommand;
         public string ModulePath;
+        public string[] Dependencies;
     }
     internal class Program
     {
-        
-        
 
-        private static string ModuleList = "./ModuleList.xml";
-        private static string ModulePath = "./Modules/";
-        private static Dictionary<string, string> moduleDatabase;
+
+        private static string RootDir =
+            Path.GetDirectoryName(new Uri(Assembly.GetEntryAssembly().CodeBase).AbsolutePath);
+        private static string ModuleList = Path.Combine(RootDir, "ModuleList.xml");
+        private static string ModulePath = Path.Combine(RootDir, "Modules/");
+        private static List<ModuleInfo> moduleDatabase;
+
+        private static bool ContainsKey(List<ModuleInfo> info, string key)
+        {
+            for (int i = 0; i < info.Count; i++)
+            {
+                if (info[i].ModuleCommand == key) return true;
+            }
+
+            return false;
+        }
+
+        private static int IndexOf(List<ModuleInfo> info, string key)
+        {
+            for (int i = 0; i < info.Count; i++)
+            {
+                if (info[i].ModuleCommand == key) return i;
+            }
+
+            return -1;
+        }
         private static void Main(string[] args)
         {
+            List<string> arg = args.ToList();
+
+            if (arg.IndexOf("--scan") != -1)
+            {
+                File.Delete(ModuleList);
+            }
+
 
             CreateModuleList();
 
-            if (moduleDatabase.ContainsKey(args[0]))
+
+
+            if (ContainsKey(moduleDatabase,args[0]))
             {
                 List<string> arguments = new List<string>();
                 for (int i = 1; i < args.Length; i++)
@@ -36,9 +67,16 @@ namespace cmdcli
                     arguments.Add(args[i]);
                 }
 
-                LoadModule(moduleDatabase[args[0]]).RunArgs(arguments.ToArray());
+                LoadModule(moduleDatabase[IndexOf(moduleDatabase, args[0])].ModulePath).RunArgs(arguments.ToArray());
             }
-
+            else if (arg.IndexOf("--help") != -1)
+            {
+                Console.WriteLine("Available Modules:");
+                foreach (ModuleInfo keyValuePair in moduleDatabase)
+                {
+                    Console.WriteLine("\t\t" + keyValuePair.ModuleCommand);
+                }
+            }
         }
 
         private static AbstractCmdModuleInfo LoadModule(string path)
@@ -48,8 +86,6 @@ namespace cmdcli
             {
                 Assembly asm = Assembly.LoadFile(fp);
                 AbstractCmdModuleInfo info = GetInfo(asm);
-                if (info != null)
-                    Runner.AddAssembly(asm);
                 return info;
             }
             catch (Exception e)
@@ -61,10 +97,10 @@ namespace cmdcli
 
         private static void UpdateModuleList()
         {
-            List<string> remList = new List<string>();
-            foreach (KeyValuePair<string, string> keyValuePair in moduleDatabase)
+            List<ModuleInfo> remList = new List<ModuleInfo>();
+            foreach (ModuleInfo keyValuePair in moduleDatabase)
             {
-                if (!File.Exists(keyValuePair.Value)) remList.Add(keyValuePair.Key);
+                if (!File.Exists(keyValuePair.ModulePath)) remList.Add(keyValuePair);
             }
 
             for (int i = 0; i < remList.Count; i++)
@@ -74,31 +110,20 @@ namespace cmdcli
             SaveModuleList(moduleDatabase);
         }
 
-        private static void SaveModuleList(Dictionary<string, string> moduleList)
+        private static void SaveModuleList(List<ModuleInfo> moduleList)
         {
-            List<ModuleInfo> list = new List<ModuleInfo>();
-            foreach (KeyValuePair<string, string> keyValuePair in moduleList)
-            {
-                list.Add(new ModuleInfo { ModuleCommand = keyValuePair.Key, ModulePath = keyValuePair.Value});
-            }
             XmlSerializer xs = new XmlSerializer(typeof(List<ModuleInfo>));
             FileStream fs = new FileStream(ModuleList, FileMode.Create);
-            xs.Serialize(fs, list);
+            xs.Serialize(fs, moduleList);
         }
 
-        private static Dictionary<string, string> LoadModuleList()
+        private static List<ModuleInfo> LoadModuleList()
         {
             FileStream fs = new FileStream(ModuleList, FileMode.Open);
             XmlSerializer xs = new XmlSerializer(typeof(List<ModuleInfo>));
             List<ModuleInfo> list = (List<ModuleInfo>)xs.Deserialize(fs);
             fs.Close();
-            Dictionary<string, string> ret = new Dictionary<string, string>();
-            for (int i = 0; i < list.Count; i++)
-            {
-                ret.Add(list[i].ModuleCommand, list[i].ModulePath);
-            }
-
-            return ret;
+            return list;
         }
 
         private static void CreateModuleList()
@@ -110,7 +135,7 @@ namespace cmdcli
                 UpdateModuleList();
                 return;
             }
-            moduleDatabase = new Dictionary<string, string>();
+            moduleDatabase = new List<ModuleInfo>();
             string[] modules = Directory.GetFiles(ModulePath, "*.dll", SearchOption.AllDirectories);
             for (int i = 0; i < modules.Length; i++)
             {
@@ -120,7 +145,7 @@ namespace cmdcli
                     Assembly asm = Assembly.LoadFile(fp);
                     AbstractCmdModuleInfo info = GetInfo(asm);
                     if (info == null) continue;
-                    moduleDatabase.Add(info.ModuleName, fp);
+                    moduleDatabase.Add(new ModuleInfo{Dependencies = new string[0], ModulePath = fp, ModuleCommand = info.ModuleName});
                 }
                 catch (Exception e)
                 {
