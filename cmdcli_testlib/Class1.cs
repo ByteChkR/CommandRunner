@@ -38,8 +38,16 @@ namespace cmdcli_testlib
                 wc.DownloadFile(url, tmpFile);
                 ZipArchive za = ZipFile.OpenRead(tmpFile);
                 string moduleDir = Path.GetDirectoryName(new Uri(Assembly.GetEntryAssembly().CodeBase).AbsolutePath) + "/Modules";
-                Console.WriteLine("Extracting Package to "+ moduleDir);
-
+                Console.WriteLine("Extracting Package to " + moduleDir);
+                for (int i = 0; i < za.Entries.Count; i++)
+                {
+                    string p = Path.Combine(moduleDir, za.Entries[i].FullName);
+                    if (File.Exists(p))
+                    {
+                        Console.WriteLine("Deleting file : " + p);
+                        File.Delete(p);
+                    }
+                }
                 za.ExtractToDirectory(moduleDir);
                 Directory.Delete(tmpDir, true);
             }

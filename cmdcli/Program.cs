@@ -59,7 +59,7 @@ namespace cmdcli
 
 
 
-            if (ContainsKey(moduleDatabase,args[0]))
+            if (ContainsKey(moduleDatabase, args[0]))
             {
                 List<string> arguments = new List<string>();
                 for (int i = 1; i < args.Length; i++)
@@ -67,6 +67,7 @@ namespace cmdcli
                     arguments.Add(args[i]);
                 }
 
+                LoadDependencies(moduleDatabase[IndexOf(moduleDatabase, args[0])]);
                 LoadModule(moduleDatabase[IndexOf(moduleDatabase, args[0])].ModulePath).RunArgs(arguments.ToArray());
             }
             else if (arg.IndexOf("--help") != -1)
@@ -75,6 +76,23 @@ namespace cmdcli
                 foreach (ModuleInfo keyValuePair in moduleDatabase)
                 {
                     Console.WriteLine("\t\t" + keyValuePair.ModuleCommand);
+                }
+            }
+        }
+
+        private static void LoadDependencies(ModuleInfo info)
+        {
+            for (int i = 0; i < info.Dependencies.Length; i++)
+            {
+                try
+                {
+                    string path = ModulePath + info.Dependencies[i];
+                    Console.WriteLine("Loading Dependency: " + info.Dependencies[i]);
+                    Assembly.LoadFile(path);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
                 }
             }
         }
@@ -137,15 +155,30 @@ namespace cmdcli
             }
             moduleDatabase = new List<ModuleInfo>();
             string[] modules = Directory.GetFiles(ModulePath, "*.dll", SearchOption.AllDirectories);
+            int loadedModules = 0;
+            List<Assembly> assemblies = new List<Assembly>();
             for (int i = 0; i < modules.Length; i++)
             {
                 string fp = Path.GetFullPath(modules[i]);
                 try
                 {
-                    Assembly asm = Assembly.LoadFile(fp);
-                    AbstractCmdModuleInfo info = GetInfo(asm);
+                    assemblies.Add(Assembly.LoadFile(fp));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Not Loaded: "+ modules[i]);
+                }
+            }
+
+            for (int i = 0; i < assemblies.Count; i++)
+            {
+                
+                try
+                {
+                    AbstractCmdModuleInfo info = GetInfo(assemblies[i]);
                     if (info == null) continue;
-                    moduleDatabase.Add(new ModuleInfo{Dependencies = new string[0], ModulePath = fp, ModuleCommand = info.ModuleName});
+                    moduleDatabase.Add(new ModuleInfo { Dependencies = info.Dependencies, ModulePath = new Uri(assemblies[i].CodeBase).AbsolutePath, ModuleCommand = info.ModuleName });
+                    loadedModules++;
                 }
                 catch (Exception e)
                 {
@@ -153,12 +186,15 @@ namespace cmdcli
                 }
             }
 
+            Console.WriteLine("Loaded " + loadedModules + " Modules");
+
+
             SaveModuleList(moduleDatabase);
         }
 
         private static AbstractCmdModuleInfo GetInfo(Assembly asm)
         {
-
+            
             Type[] types = asm.GetTypes();
             Type t = typeof(AbstractCmdModuleInfo);
             for (int i = 0; i < types.Length; i++)
