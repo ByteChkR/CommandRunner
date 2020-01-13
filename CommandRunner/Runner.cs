@@ -57,6 +57,16 @@ namespace CommandRunner
             _commands.Add(cmd);
         }
 
+        public static void RemoveAt(int index)
+        {
+            if (index >= 0 && _commands.Count > index) _commands.RemoveAt(index);
+        }
+
+        public static void RemoveAllCommands()
+        {
+            _commands.Clear();
+        }
+
         /// <summary>
         /// Checks if the system is already containing a command with the same command keys
         /// </summary>
